@@ -1,0 +1,28 @@
+- name: Install Docker on Amazon Linux
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install required packages for Docker
+      yum:
+        name:
+          - yum-utils
+          - docker
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+
+    - name: Add user to the docker group
+      user:
+        name: "{{ ansible_ssh_user }}"
+        groups: docker
+        append: yes
+          
+    - name: Create a wordpress container
+      community.docker.docker_container:
+        name: some-wordpress
+        image: wordpress
+        ports:
+          - "8080:8080"
